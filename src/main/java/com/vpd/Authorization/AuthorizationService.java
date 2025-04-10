@@ -1,7 +1,7 @@
-package com.lis.admin.Authorization;
+package com.vpd.Authorization;
 
-import com.lis.admin.User.User;
-import com.lis.admin.User.UserRepository;
+import com.vpd.User.User;
+import com.vpd.User.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

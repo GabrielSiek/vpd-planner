@@ -1,4 +1,4 @@
-package com.lis.admin.User;
+package com.vpd.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

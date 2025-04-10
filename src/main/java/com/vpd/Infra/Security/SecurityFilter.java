@@ -1,7 +1,6 @@
-package com.lis.admin.Infra.Security;
+package com.vpd.Infra.Security;
 
-import com.lis.admin.Authentication.AuthenticationService;
-import com.lis.admin.User.UserRepository;
+import com.vpd.Authentication.AuthenticationService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

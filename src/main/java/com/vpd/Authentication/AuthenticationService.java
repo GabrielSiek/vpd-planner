@@ -1,7 +1,7 @@
-package com.lis.admin.Authentication;
+package com.vpd.Authentication;
 
-import com.lis.admin.Infra.Security.TokenService;
-import com.lis.admin.User.UserRepository;
+import com.vpd.Infra.Security.TokenService;
+import com.vpd.User.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;

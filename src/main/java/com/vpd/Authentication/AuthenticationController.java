@@ -1,9 +1,9 @@
-package com.lis.admin.Authentication;
+package com.vpd.Authentication;
 
-import com.lis.admin.Infra.Security.TokenService;
-import com.lis.admin.User.User;
-import com.lis.admin.User.UserDTO;
-import com.lis.admin.User.UserRepository;
+import com.vpd.Infra.Security.TokenService;
+import com.vpd.User.User;
+import com.vpd.User.UserDTO;
+import com.vpd.User.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

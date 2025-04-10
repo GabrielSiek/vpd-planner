@@ -1,4 +1,4 @@
-package com.lis.admin;
+package com.vpd;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

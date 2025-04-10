@@ -1,4 +1,4 @@
-package com.lis.admin.User;
+package com.vpd.User;
 
 
 import jakarta.persistence.*;

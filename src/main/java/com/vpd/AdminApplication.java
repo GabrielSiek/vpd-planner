@@ -1,4 +1,4 @@
-package com.lis.admin;
+package com.vpd;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

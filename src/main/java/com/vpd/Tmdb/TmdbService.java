@@ -1,2 +1,4 @@
-package com.vpd.Tmdb;public class TmdbService {
+package com.vpd.Tmdb;
+
+public class TmdbService {
 }

@@ -1,4 +1,4 @@
-package com.lis.admin.Infra.Security;
+package com.vpd.Infra.Security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
