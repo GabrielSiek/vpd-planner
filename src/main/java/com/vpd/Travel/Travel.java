@@ -36,5 +36,6 @@ public class Travel {
     private Set<User> users;
 
 
+
     //ainda precisa fazer a lógica de planejamento de viagem, roteiros, hotel, data etc.
 }

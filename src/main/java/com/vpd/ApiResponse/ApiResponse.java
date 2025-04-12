@@ -26,5 +26,4 @@ public class ApiResponse<T> {
         this.statusCode = statusCode;
         this.timestamp = LocalDateTime.now();
     }
-
 }
