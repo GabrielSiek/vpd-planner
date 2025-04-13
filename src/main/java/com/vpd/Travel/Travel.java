@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -25,6 +26,8 @@ public class Travel {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
+    private String name;
+
     @OneToMany(mappedBy = "travel", fetch = FetchType.LAZY)
     private List<Collection> collections;
 
@@ -34,6 +37,10 @@ public class Travel {
     @ManyToMany(mappedBy = "travels")
     @JsonIgnore
     private Set<User> users;
+
+    private LocalDate startDate;
+
+    private LocalDate endDate;
 
 
 

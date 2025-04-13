@@ -1,4 +1,4 @@
-package com.vpd.Friendship;
+package com.vpd.Friendship.DTO;
 
 import java.time.LocalDate;
 

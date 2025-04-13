@@ -1,6 +1,5 @@
 package com.vpd.ApiResponse;
 
-import com.vpd.Friendship.FriendshipDTO;
 import org.springframework.http.HttpStatus;
 
 public class ApiResponseHelper {

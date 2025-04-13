@@ -1,6 +1,10 @@
 package com.vpd.Friendship;
 
 import com.vpd.ApiResponse.ApiResponse;
+import com.vpd.Friendship.DTO.FriendDTO;
+import com.vpd.Friendship.DTO.FriendshipDTO;
+import com.vpd.Friendship.DTO.FriendshipInviteDTO;
+import com.vpd.Friendship.DTO.FriendshipResponseDTO;
 import com.vpd.User.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

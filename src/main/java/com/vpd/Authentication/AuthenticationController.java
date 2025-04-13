@@ -1,8 +1,10 @@
 package com.vpd.Authentication;
 
+import com.vpd.Authentication.DTO.AuthenticationDTO;
+import com.vpd.Authentication.DTO.LoginResponseDTO;
 import com.vpd.Infra.Security.TokenService;
 import com.vpd.User.User;
-import com.vpd.User.UserDTO;
+import com.vpd.User.DTO.UserDTO;
 import com.vpd.User.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
