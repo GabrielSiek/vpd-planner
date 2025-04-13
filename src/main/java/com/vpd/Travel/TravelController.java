@@ -1,6 +1,7 @@
 package com.vpd.Travel;
 
 import com.vpd.ApiResponse.ApiResponse;
+import com.vpd.ApiResponse.ApiResponseHelper;
 import com.vpd.Travel.DTO.RegisterTravelDTO;
 import com.vpd.Travel.DTO.TravelBasicDTO;
 import com.vpd.Travel.DTO.TravelInviteDTO;
@@ -27,8 +28,6 @@ public class TravelController {
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 
-    //ver as coisas da viagem
-
     @PostMapping("create")
     public ResponseEntity<ApiResponse<?>> createTravel(
             @RequestBody RegisterTravelDTO travel,
@@ -49,5 +48,23 @@ public class TravelController {
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 
-    //deletar
+    @DeleteMapping("{id}/leave")
+    public ResponseEntity<ApiResponse<?>> leaveTravel(
+            @PathVariable String id,
+            @AuthenticationPrincipal User user) {
+
+        ApiResponse<?> response = travelService.leaveTravel(id, user);
+
+        return ResponseEntity.status(response.getStatusCode()).body(response);
+    }
+
+    @DeleteMapping("{id}/delete")
+    public ResponseEntity<ApiResponse<?>> deleteTravel(
+            @PathVariable String id,
+            @AuthenticationPrincipal User user) {
+
+        ApiResponse<?> response = travelService.deleteTravel(id, user);
+
+        return ResponseEntity.status(response.getStatusCode()).body(response);
+    }
 }
