@@ -18,7 +18,7 @@ public class TravelController {
     @Autowired
     private TravelService travelService;
 
-    @GetMapping("{id}/basic")
+    @GetMapping("{id}")
     public ResponseEntity<ApiResponse<TravelBasicDTO>> getBasicTravelInformation (
             @PathVariable String id,
             @AuthenticationPrincipal User user) {
@@ -38,7 +38,7 @@ public class TravelController {
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 
-    @PostMapping("invite")
+    @PostMapping("add-traveller")
     public ResponseEntity<ApiResponse<?>> addTraveller(
             @RequestBody TravelInviteDTO travelInviteDTO,
             @AuthenticationPrincipal User user) {
