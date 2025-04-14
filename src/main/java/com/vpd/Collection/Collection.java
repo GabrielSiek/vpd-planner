@@ -1,5 +1,7 @@
 package com.vpd.Collection;
 
+import com.vpd.Image.Image;
+import com.vpd.Image.ImageService;
 import com.vpd.Movie.Movie;
 import com.vpd.Travel.Travel;
 import jakarta.persistence.*;
@@ -19,12 +21,12 @@ import java.util.Set;
 public class Collection {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     private String name;
 
-    private String posterPath;
+    private Image poster;
 
     @ManyToMany
     @JoinTable(

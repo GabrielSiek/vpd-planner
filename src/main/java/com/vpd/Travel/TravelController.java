@@ -2,9 +2,7 @@ package com.vpd.Travel;
 
 import com.vpd.ApiResponse.ApiResponse;
 import com.vpd.ApiResponse.ApiResponseHelper;
-import com.vpd.Travel.DTO.RegisterTravelDTO;
-import com.vpd.Travel.DTO.TravelBasicDTO;
-import com.vpd.Travel.DTO.TravelInviteDTO;
+import com.vpd.Travel.DTO.*;
 import com.vpd.User.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +32,26 @@ public class TravelController {
             @AuthenticationPrincipal User user) {
 
         ApiResponse<?> response = travelService.createTravel(travel, user);
+
+        return ResponseEntity.status(response.getStatusCode()).body(response);
+    }
+
+    @PostMapping("rename")
+    public ResponseEntity<ApiResponse<?>> renameTravel(
+            @RequestBody RenameTravelDTO newTravel,
+            @AuthenticationPrincipal User user) {
+
+        ApiResponse<?> response = travelService.renameTravel(newTravel, user);
+
+        return ResponseEntity.status(response.getStatusCode()).body(response);
+    }
+
+    @PostMapping("update-date")
+    public ResponseEntity<ApiResponse<?>> updateDates(
+            @RequestBody UpdateDatesDTO updateDatesDTO,
+            @AuthenticationPrincipal User user) {
+
+        ApiResponse<?> response = travelService.updateDates(updateDatesDTO, user);
 
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }

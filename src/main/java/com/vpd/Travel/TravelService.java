@@ -2,10 +2,7 @@ package com.vpd.Travel;
 
 import com.vpd.ApiResponse.ApiResponse;
 import com.vpd.ApiResponse.ApiResponseHelper;
-import com.vpd.Travel.DTO.RegisterTravelDTO;
-import com.vpd.Travel.DTO.TravelBasicDTO;
-import com.vpd.Travel.DTO.TravelInviteDTO;
-import com.vpd.Travel.DTO.TravellerDTO;
+import com.vpd.Travel.DTO.*;
 import com.vpd.User.User;
 import com.vpd.User.UserRepository;
 import jakarta.transaction.Transactional;
@@ -13,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -94,6 +90,47 @@ public class TravelService {
         }
     }
 
+    public ApiResponse<?> renameTravel(RenameTravelDTO newTravel, User user) {
+
+        try {
+            Travel travel = travelRepository.findByIdAndUser(newTravel.id(), user).orElse(null);
+
+            if(travel == null)
+                return  ApiResponseHelper.notFound("Travel not found");
+
+            travel.setName(newTravel.newName());
+            travelRepository.save(travel);
+
+            return ApiResponseHelper.ok("Travel renamed successfully", travel.getName());
+
+        } catch (Exception exception) {
+            return ApiResponseHelper.internalError(exception);
+        }
+    }
+
+    @Transactional
+    public ApiResponse<?> updateDates(UpdateDatesDTO updateDatesDTO, User user) {
+
+        try {
+            Travel travel = travelRepository.findByIdAndUser(updateDatesDTO.id(), user).orElse(null);
+
+            if (travel == null)
+                return ApiResponseHelper.notFound("Travel not found");
+
+            travel.setStartDate(updateDatesDTO.startDate());
+            travel.setEndDate(updateDatesDTO.endDate());
+
+            travelRepository.save(travel);
+
+            return ApiResponseHelper.ok(
+                    "Dates updated successfully",
+                    "Start date: " + travel.getStartDate() +
+                    ",\\nEnd Date: " + travel.getEndDate());
+        } catch (Exception exception) {
+            return ApiResponseHelper.internalError(exception);
+        }
+    }
+
     public ApiResponse<?> addTraveller(TravelInviteDTO travelInviteDTO, User user) {
 
         try {
@@ -103,7 +140,7 @@ public class TravelService {
             if (receiver.isEmpty())
                 return ApiResponseHelper.notFound("User not found");
 
-            Travel travel = getTravelFromUser(travelInviteDTO.id(), user);
+            Travel travel = travelRepository.findByIdAndUser(travelInviteDTO.id(), user).orElse(null);
 
             if (travel == null)
                 return ApiResponseHelper.notFound("Travel not Found");
@@ -133,7 +170,7 @@ public class TravelService {
     public ApiResponse<?> leaveTravel(String id, User user) {
 
         try {
-            Travel travel = getTravelFromUser(id, user);
+            Travel travel = travelRepository.findByIdAndUser(id, user).orElse(null);
 
             if (travel == null)
                 return ApiResponseHelper.notFound("Travel not Found");
@@ -148,7 +185,7 @@ public class TravelService {
 
         try {
 
-            Travel travel = getTravelFromUser(id, user);
+            Travel travel = travelRepository.findByIdAndUser(id, user).orElse(null);
 
             if (travel == null)
                 return ApiResponseHelper.notFound("Travel not found");
@@ -158,24 +195,6 @@ public class TravelService {
             return ApiResponseHelper.ok("Travel deleted", travel.getName());
         } catch (Exception exception) {
             return ApiResponseHelper.internalError(exception);
-        }
-    }
-
-    private Travel getTravelFromUser(String id, User user) {
-
-        try {
-            Set<Travel> travels = user.getTravels();
-
-            Travel travel = null;
-
-            for (Travel t : travels) {
-                if (t.getId().equals(id))
-                    travel = t;
-            }
-
-            return travel;
-        } catch (Exception exception) {
-            return null;
         }
     }
 }

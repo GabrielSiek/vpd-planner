@@ -26,8 +26,8 @@ public class Movie {
     //https://image.tmdb.org/t/p/original/
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private int id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
     private String originalTitle;
 
