@@ -4,6 +4,7 @@ import com.vpd.ApiResponse.ApiResponse;
 import com.vpd.ApiResponse.ApiResponseHelper;
 import com.vpd.Collection.Collection;
 import com.vpd.Collection.CollectionRepository;
+import com.vpd.Collection.DTO.SimpleCollectionDTO;
 import com.vpd.Movie.DTO.MovieDTO;
 import com.vpd.Movie.DTO.MovieIdDTO;
 import com.vpd.Movie.DTO.RegisterMovieDTO;
@@ -19,7 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
+//sem verificacao de usuario
 @Service
 public class MovieService {
 
@@ -38,8 +39,6 @@ public class MovieService {
     @Autowired
     private TravelRepository travelRepository;
 
-    //create e delete precisa atualizar o usermovierepository tbm
-    //sem verificacao de usuario
     public ApiResponse<?> addMovie(RegisterMovieDTO movieDTO, User user) {
 
         try {
@@ -90,11 +89,60 @@ public class MovieService {
         }
     }
 
-    public ApiResponse<?> deleteMovie(MovieIdDTO movieIdDTO, User user) {
+    public ApiResponse<MovieDTO> getMovie(String id, User user) {
+        try {
+            Optional<Movie> optionalMovie = movieRepository.findById(id);
+
+            if(optionalMovie.isEmpty())
+                return ApiResponseHelper.notFound("Movie not found");
+
+            Movie movie = optionalMovie.get();
+            Optional<UserMovie> optionalUserMovie = userMovieRepository.findByUserAndMovie(user, movie);
+
+            if(optionalUserMovie.isEmpty())
+                return ApiResponseHelper.notFound("Movie not found on user collections");
+
+            UserMovie userMovie = optionalUserMovie.get();
+
+            List<SimpleCollectionDTO> collectionDTOList = movie.getCollections()
+                    .stream().map(collection -> new SimpleCollectionDTO(
+                            collection.getId(),
+                            collection.getName()))
+                    .toList();
+
+            MovieDTO movieDTO = new MovieDTO(
+                    movie.getTravel().getId(),
+                    movie.getTravel().getName(),
+                    collectionDTOList,
+                    userMovie.getStars(),
+                    userMovie.isFavorite(),
+                    userMovie.isWatched(),
+                    movie.getOriginalTitle(),
+                    movie.getOriginalLanguage(),
+                    movie.getTitle(),
+                    movie.getOverview(),
+                    movie.getGenres(),
+                    movie.getReleaseDate(),
+                    movie.getVoteAverage(),
+                    movie.getVoteCount(),
+                    movie.getPopularity(),
+                    movie.getPosterPath(),
+                    movie.getBackgroundPath(),
+                    movie.isAdult()
+            );
+
+            return ApiResponseHelper.ok("Movie found successfully", movieDTO);
+
+        } catch (Exception exception) {
+            return ApiResponseHelper.internalError(exception);
+        }
+    }
+
+    public ApiResponse<?> deleteMovie(String id, User user) {
 
         try {
 
-            Optional<Movie> optionalMovie = movieRepository.findById(movieIdDTO.movieId());
+            Optional<Movie> optionalMovie = movieRepository.findById(id);
 
             if(optionalMovie.isEmpty())
                 return ApiResponseHelper.notFound("Movie not found");
@@ -135,14 +183,6 @@ public class MovieService {
             return ApiResponseHelper.internalError(exception);
         }
     }
-
-        public ApiResponse<MovieDTO> getMovie(String id) {
-            try {
-
-            } catch (Exception exception) {
-                ApiResponseHelper.internalError(exception);
-            }
-        }
 
     private List<String> getGenresFromIds(List<String> ids) {
         return ids.stream()

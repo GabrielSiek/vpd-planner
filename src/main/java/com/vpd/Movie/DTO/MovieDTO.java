@@ -1,8 +1,6 @@
 package com.vpd.Movie.DTO;
 
-import com.vpd.Collection.Collection;
 import com.vpd.Collection.DTO.SimpleCollectionDTO;
-import com.vpd.UserMovie.UserMovie;
 
 import java.time.LocalDate;
 import java.util.List;

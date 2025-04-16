@@ -2,6 +2,7 @@ package com.vpd.Movie;
 
 import com.vpd.ApiResponse.ApiResponse;
 import com.vpd.ApiResponse.ApiResponseHelper;
+import com.vpd.Movie.DTO.MovieDTO;
 import com.vpd.Movie.DTO.MovieIdDTO;
 import com.vpd.Movie.DTO.RegisterMovieDTO;
 import com.vpd.Tmdb.TmdbService;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/movies")
+@RequestMapping("/movie")
 public class MovieController {
 
     @Autowired
@@ -45,5 +46,26 @@ public class MovieController {
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 
+    @GetMapping("{id}")
+    public ResponseEntity<ApiResponse<MovieDTO>> getMovie(
+            @PathVariable String id,
+            @AuthenticationPrincipal User user) {
+
+        ApiResponse<MovieDTO> response = movieService.getMovie(id, user);
+
+        return ResponseEntity.status(response.getStatusCode()).body(response);
+
+    }
+
+    @DeleteMapping("{id}/delete")
+    public ResponseEntity<ApiResponse<?>> deleteMovie(
+            @PathVariable String id,
+            @AuthenticationPrincipal User user) {
+
+        ApiResponse<?> response = movieService.deleteMovie(id, user);
+
+        return ResponseEntity.status(response.getStatusCode()).body(response);
+
+    }
     //A lógica para favoritar, dar nota e marcar como assistido vão ficar no usermoviecontroller
 }
