@@ -3,6 +3,7 @@ package com.vpd.User;
 
 import com.vpd.Friendship.Friendship;
 import com.vpd.Travel.Travel;
+import com.vpd.UserMovie.UserMovie;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -38,6 +39,9 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "receiver")
     private List<Friendship> receivedFriendships;
+
+    @OneToMany(mappedBy = "user")
+    private List<UserMovie> userMovies;
 
     @ManyToMany
     @JoinTable(

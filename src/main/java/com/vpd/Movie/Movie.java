@@ -3,6 +3,7 @@ package com.vpd.Movie;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vpd.Collection.Collection;
 import com.vpd.Travel.Travel;
+import com.vpd.UserMovie.UserMovie;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -60,4 +61,7 @@ public class Movie {
     @ManyToOne
     @JoinColumn(name = "travel_id")
     private Travel travel;
+
+    @OneToMany(mappedBy = "movie")
+    private List<UserMovie> userMovies;
 }

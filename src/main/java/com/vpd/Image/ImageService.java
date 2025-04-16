@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Optional;
 
 public class ImageService {
 
@@ -20,9 +21,37 @@ public class ImageService {
             image.setImageType(imageFile.getContentType());
             image.setImageData(imageFile.getBytes());
 
+            if(image.getImageData() == null)
+                return null;
+
             imageRepository.save(image);
 
             return image;
+        } catch (Exception exception) {
+            return null;
+        }
+    }
+
+    public Image addImage(Image image) {
+
+        try {
+            imageRepository.save(image);
+
+            return image;
+        } catch (Exception exception) {
+            return null;
+        }
+    }
+
+    public Image deleteImage(Image poster) {
+
+        try {
+            if(poster == null)
+                return null;
+
+            imageRepository.delete(poster);
+
+            return poster;
         } catch (Exception exception) {
             return null;
         }

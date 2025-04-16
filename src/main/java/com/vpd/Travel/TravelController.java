@@ -46,7 +46,7 @@ public class TravelController {
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 
-    @PostMapping("update-date")
+    @PostMapping("update-dates")
     public ResponseEntity<ApiResponse<?>> updateDates(
             @RequestBody UpdateDatesDTO updateDatesDTO,
             @AuthenticationPrincipal User user) {
