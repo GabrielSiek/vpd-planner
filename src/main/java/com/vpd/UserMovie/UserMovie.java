@@ -34,7 +34,9 @@ public class UserMovie {
 
     private boolean watched;
 
-    public UserMovie() {
+    public UserMovie(User user, Movie movie) {
+        this.user = user;
+        this.movie = movie;
         this.favorite = false;
         this.watched = false;
         this.stars = null;

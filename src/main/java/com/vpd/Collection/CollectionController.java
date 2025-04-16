@@ -26,10 +26,9 @@ public class CollectionController {
 
     @PostMapping("create")
     public ResponseEntity<ApiResponse<?>> createCollection(
-            @RequestBody RegisterCollectionDTO registerCollectionDTO,
-            @AuthenticationPrincipal User user) {
+            @RequestBody RegisterCollectionDTO registerCollectionDTO) {
 
-        ApiResponse<?> response = collectionService.createCollection(registerCollectionDTO, user);
+        ApiResponse<?> response = collectionService.createCollection(registerCollectionDTO);
 
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
@@ -95,11 +94,9 @@ public class CollectionController {
     }
 
     @DeleteMapping("{id}/delete")
-    public ResponseEntity<ApiResponse<?>> deleteCollection(
-            @PathVariable String id,
-            @AuthenticationPrincipal User user) {
+    public ResponseEntity<ApiResponse<?>> deleteCollection(@PathVariable String id) {
 
-        ApiResponse<?> response = collectionService.deleteCollection(id, user);
+        ApiResponse<?> response = collectionService.deleteCollection(id);
 
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }

@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+//arrumar a logica para todos optional virarem um objeto para n quebrar o padrao
+//sem verificacao de usuario
 @Service
 public class CollectionService {
 
@@ -47,10 +49,10 @@ public class CollectionService {
 
 
     @Transactional
-    public ApiResponse<?> createCollection(RegisterCollectionDTO registerCollectionDTO, User user) {
+    public ApiResponse<?> createCollection(RegisterCollectionDTO registerCollectionDTO) {
 
         try {
-            Optional<Travel> optionalTravel = travelRepository.findByIdAndUser(registerCollectionDTO.travelId(), user);
+            Optional<Travel> optionalTravel = travelRepository.findById(registerCollectionDTO.travelId());
 
             if(optionalTravel.isEmpty())
                 return ApiResponseHelper.notFound("Travel not found");
@@ -193,7 +195,6 @@ public class CollectionService {
         try {
             Optional<Collection> optionalCollection = collectionRepository.findById(id);
 
-
             if(optionalCollection.isEmpty())
                 return ApiResponseHelper.notFound("Collection not found");
 
@@ -221,16 +222,13 @@ public class CollectionService {
     }
 
     @Transactional
-    public ApiResponse<?> deleteCollection(String id, User user) {
+    public ApiResponse<?> deleteCollection(String id) {
 
         try {
             Optional<Collection> optionalCollection = collectionRepository.findById(id);
 
             if(optionalCollection.isEmpty())
                 return ApiResponseHelper.notFound("Collection not Found");
-
-            if(!optionalCollection.get().getTravel().getUsers().contains(user))
-                return ApiResponseHelper.unauthorized();
 
             Travel travel = optionalCollection.get().getTravel();
 
