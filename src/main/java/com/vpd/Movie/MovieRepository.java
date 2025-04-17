@@ -12,7 +12,5 @@ import java.util.Set;
 @Repository
 public interface MovieRepository extends JpaRepository<Movie, String> {
 
-    @Query("SELECT m FROM Movie m JOIN m.travels t WHERE t = :travel AND m.id IN :ids")
-    Set<Movie> findByIdInAndTravel(@Param("ids") List<String> ids, @Param("travel") Travel travel);
-
+    Set<Movie> findByIdInAndTravel(List<String> ids, Travel travel);
 }

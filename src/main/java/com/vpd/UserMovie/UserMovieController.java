@@ -2,11 +2,13 @@ package com.vpd.UserMovie;
 
 import com.vpd.ApiResponse.ApiResponse;
 import com.vpd.User.User;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "6 - Movie variables")
 @RestController
 @RequestMapping("movie")
 public class UserMovieController {
@@ -38,7 +40,7 @@ public class UserMovieController {
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 
-    @PostMapping("{id}/change-view-status")
+    @PostMapping("{id}/change-review-status")
     public ResponseEntity<ApiResponse<?>> changeReviewStatus(
             @RequestBody double review,
             @PathVariable String id,

@@ -26,6 +26,8 @@ public class Collection {
 
     private String name;
 
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "poster_id")
     private Image poster;
 
     @ManyToMany

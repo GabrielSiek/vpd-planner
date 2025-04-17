@@ -6,6 +6,7 @@ import com.vpd.Friendship.DTO.FriendshipDTO;
 import com.vpd.Friendship.DTO.FriendshipInviteDTO;
 import com.vpd.Friendship.DTO.FriendshipResponseDTO;
 import com.vpd.User.User;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "2 - Friendship")
 @RestController
 @RequestMapping("friendship")
 public class FriendshipController {

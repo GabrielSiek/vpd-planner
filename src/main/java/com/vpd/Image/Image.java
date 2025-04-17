@@ -23,5 +23,6 @@ public class Image {
     private String imageType;
 
     @Lob
+    @Column(columnDefinition = "BYTEA")
     private byte[] imageData;
 }

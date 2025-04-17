@@ -4,11 +4,13 @@ import com.vpd.ApiResponse.ApiResponse;
 import com.vpd.ApiResponse.ApiResponseHelper;
 import com.vpd.Travel.DTO.*;
 import com.vpd.User.User;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "3 - Travel")
 @RestController
 @RequestMapping("travel")
 public class TravelController {
