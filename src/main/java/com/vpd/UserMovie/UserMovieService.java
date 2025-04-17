@@ -6,9 +6,11 @@ import com.vpd.Movie.Movie;
 import com.vpd.Movie.MovieRepository;
 import com.vpd.User.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Service
 public class UserMovieService {
 
     @Autowired
