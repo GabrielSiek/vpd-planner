@@ -26,11 +26,15 @@ public class MovieController {
     @Autowired
     private MovieService movieService;
 
-    @GetMapping("/search-tmdb")
+    @GetMapping("/search-tmdb/{query}/page={page}")
     public String addMovieFromTmdb(
-            @RequestParam String query,
-            @RequestParam(defaultValue = "1") String page) {
+            @PathVariable(value = "query") String query,
+            @PathVariable(value = "page") String page) {
         try {
+            if (query.trim().isEmpty()) {
+                return "";
+            }
+
             return tmdbService.addMovieFromTmdb(query, page);
         } catch (IOException e) {
             return "Error: " + e.getMessage();

@@ -1,0 +1,824 @@
+{
+	"info": {
+		"_postman_id": "5e0d58b3-ce13-443a-a0e0-8bf5b510f84e",
+		"name": "VPD Planner",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29331139"
+	},
+	"item": [
+		{
+			"name": "Register",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"teste@email.com\",\r\n  \"username\": \"teste\",\r\n  \"password\": \"123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/auth/register",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"teste@email.com\",\r\n  \"password\": \"123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/auth/login",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "friendship - invite",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"receiverEmail\": \"string\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/friendship/invite",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"friendship",
+						"invite"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "friendship - response",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"friendshipStatus\": \"PENDING\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/friendship/response",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"friendship",
+						"response"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "friendship - id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/friendship/id",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"friendship",
+						"id"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "friendship - invites",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/invites",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"invites"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "friendship - all",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/friendship/all",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"friendship",
+						"all"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "friendship - delete",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/friendship/id/delete",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"friendship",
+						"id",
+						"delete"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "travel - create",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"string\",\r\n  \"emails\": [\r\n    \"string\"\r\n  ],\r\n  \"startDate\": \"2025-04-18\",\r\n  \"endDate\": \"2025-04-18\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/travel/create",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"travel",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "travel - add traveller",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"string\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/travel/add-traveler",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"travel",
+						"add-traveler"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "travel - rename",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"string\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/travel/id/rename",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"travel",
+						"id",
+						"rename"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "travel - update dates",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"startDate\": \"2025-04-18\",\r\n  \"endDate\": \"2025-04-18\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/travel/id/update-dates",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"travel",
+						"id",
+						"update-dates"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "travel - search movies",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"search\": \"string\",\r\n  \"genres\": [\r\n    \"string\"\r\n  ],\r\n  \"page\": 0,\r\n  \"size\": 0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/travel/id/search-movies",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"travel",
+						"id",
+						"search-movies"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "travel - id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/travel/id",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"travel",
+						"id"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "travel - leave",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/travel/id/leave",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"travel",
+						"id",
+						"leave"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "travel - delete",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/travel/id/delete",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"travel",
+						"id",
+						"delete"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "collection - create",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"string\",\r\n  \"moviesId\": [\r\n    \"string\"\r\n  ],\r\n  \"travelId\": \"string\",\r\n  \"imageFile\": \"string\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/collection/create",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"collection",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "collection - poster",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/collection/id/poster",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"collection",
+						"id",
+						"poster"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "collection - movies",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/collection/id/movies",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"collection",
+						"id",
+						"movies"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "collection - update poster",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"poster\": \"string\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/collection/id/update-poster",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"collection",
+						"id",
+						"update-poster"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "collection - update name",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"string\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/collection/id/update-name",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"collection",
+						"id",
+						"update-name"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "collection - add movie",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"movieId\": \"string\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/collection/id/add-movie",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"collection",
+						"id",
+						"add-movie"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "collection - search movies",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"search\": \"string\",\r\n  \"genres\": [\r\n    \"string\"\r\n  ],\r\n  \"page\": 0,\r\n  \"size\": 0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/collection/id/search-movies",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"collection",
+						"id",
+						"search-movies"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "collection - remove movie",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"movieId\": \"string\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/collection/id/remove-movie",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"collection",
+						"id",
+						"remove-movie"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "collection - delete",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/collection/id/delete",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"collection",
+						"id",
+						"delete"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "movie - create",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"travelId\": \"string\",\r\n  \"originalTitle\": \"string\",\r\n  \"originalLanguage\": \"string\",\r\n  \"title\": \"string\",\r\n  \"overview\": \"string\",\r\n  \"genres\": [\r\n    \"string\"\r\n  ],\r\n  \"releaseDate\": \"2025-04-18\",\r\n  \"voteAverage\": 0,\r\n  \"voteCount\": 0,\r\n  \"popularity\": 0,\r\n  \"posterPath\": \"string\",\r\n  \"backgroundPath\": \"string\",\r\n  \"adult\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/movie/add",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"movie",
+						"add"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "movie - id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/movie/id",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"movie",
+						"id"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "movie - tmdb",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/movie/search-tmdb/query/page=page",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"movie",
+						"search-tmdb",
+						"query",
+						"page=page"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "movie - delete",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/movie/id/delete",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"movie",
+						"id",
+						"delete"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "movie - update view",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"viewStatus\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/movie/id/update-view-status",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"movie",
+						"id",
+						"update-view-status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "movie - update review",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"stars\": 0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/movie/id/update-review-status",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"movie",
+						"id",
+						"update-review-status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "movie - update favorite",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"favoriteStatus\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/movie/id/update-favorite-status",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"movie",
+						"id",
+						"update-favorite-status"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer"
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080/",
+			"type": "default"
+		}
+	]
+}
