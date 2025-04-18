@@ -40,6 +40,14 @@ public class TravelService {
     public ApiResponse<TravelBasicDTO> getBasicTravelInformation(String id, User user) {
 
         try {
+
+            Optional<User> optionalUser = userRepository.findById(user.getId());
+
+            if(optionalUser.isEmpty())
+                return ApiResponseHelper.notFound("User not found");
+
+            user = optionalUser.get();
+
             Optional<Travel> optionalTravel = travelRepository.findById(id);
 
             if (optionalTravel.isEmpty())
@@ -63,7 +71,7 @@ public class TravelService {
                     travel.getStartDate(),
                     travel.getEndDate());
 
-            return ApiResponseHelper.ok("Showing " + travel.getName() + "info", travelBasicDTO);
+            return ApiResponseHelper.ok("Travel found successfully", travelBasicDTO);
 
         } catch (Exception exception) {
             return ApiResponseHelper.internalError(exception);
@@ -71,34 +79,32 @@ public class TravelService {
     }
 
     @Transactional
-    public ApiResponse<?> createTravel(RegisterTravelDTO travelDTO, User user) {
-
+    public ApiResponse<?> createTravel(RegisterTravelDTO travelDTO) {
         try {
             Travel travel = new Travel();
-
-            travel.setName(travel.getName());
+            travel.setName(travelDTO.name()); // Corrigido
             travel.setStartDate(travelDTO.startDate());
             travel.setEndDate(travelDTO.endDate());
 
-            if(!travelDTO.emails().isEmpty()) {
+            if (!travelDTO.emails().isEmpty()) {
                 Set<User> users = travelDTO.emails().stream()
                         .map(email -> userRepository.findByEmail(email))
                         .collect(Collectors.toSet());
 
-                if (users.contains(null))
+                if (users.contains(null)) {
                     return ApiResponseHelper.badRequest("Travellers list incorrect");
+                }
 
                 travel.setUsers(users);
 
-                for(User u : users){
-                    u.getTravels().add(travel);
-                    userRepository.save(u);
+                for (User user : users) {
+                    user.getTravels().add(travel);
                 }
             }
 
             travelRepository.save(travel);
 
-            return ApiResponseHelper.ok("Travel created succesfully", travel.getName());
+            return ApiResponseHelper.ok("Travel created successfully", travel);
 
         } catch (Exception exception) {
             return ApiResponseHelper.internalError(exception);
@@ -108,6 +114,14 @@ public class TravelService {
     public ApiResponse<?> renameTravel(String id, RenameTravelDTO newTravel, User user) {
 
         try {
+
+            Optional<User> optionalUser = userRepository.findById(user.getId());
+
+            if(optionalUser.isEmpty())
+                return ApiResponseHelper.notFound("User not found");
+
+            user = optionalUser.get();
+
             Travel travel = travelRepository.findByIdAndUser(id, user).orElse(null);
 
             if(travel == null)
@@ -127,6 +141,14 @@ public class TravelService {
     public ApiResponse<?> updateDates(String id, UpdateDatesDTO updateDatesDTO, User user) {
 
         try {
+
+            Optional<User> optionalUser = userRepository.findById(user.getId());
+
+            if(optionalUser.isEmpty())
+                return ApiResponseHelper.notFound("User not found");
+
+            user = optionalUser.get();
+
             Travel travel = travelRepository.findByIdAndUser(id, user).orElse(null);
 
             if (travel == null)
@@ -135,45 +157,40 @@ public class TravelService {
             travel.setStartDate(updateDatesDTO.startDate());
             travel.setEndDate(updateDatesDTO.endDate());
 
+
             travelRepository.save(travel);
 
-            return ApiResponseHelper.ok(
-                    "Dates updated successfully",
-                    "Start date: " + travel.getStartDate() +
-                    ",\\nEnd Date: " + travel.getEndDate());
+
+            return ApiResponseHelper.ok("Dates updated successfully", updateDatesDTO);
         } catch (Exception exception) {
             return ApiResponseHelper.internalError(exception);
         }
     }
 
+    @Transactional
     public ApiResponse<?> addTraveller(String id, TravelInviteDTO travelInviteDTO, User user) {
-
         try {
-
-            Optional<User> receiver = Optional.ofNullable(userRepository.findByEmail(travelInviteDTO.email()));
-
-            if (receiver.isEmpty())
+            user = userRepository.findById(user.getId())
+                    .orElse(null);
+            if (user == null)
                 return ApiResponseHelper.notFound("User not found");
 
+            User receiver = userRepository.findByEmail(travelInviteDTO.email());
+            if (receiver == null)
+                return ApiResponseHelper.notFound("Invited user not found");
+
             Travel travel = travelRepository.findByIdAndUser(id, user).orElse(null);
-
             if (travel == null)
-                return ApiResponseHelper.notFound("Travel not Found");
+                return ApiResponseHelper.notFound("Travel not found");
 
-            Set<User> users = travel.getUsers();
-
-            for (User u : users) {
-                if (id.equals(u.getId()))
-                    return ApiResponseHelper.badRequest("User already added to the travel");
+            if (travel.getUsers().stream().anyMatch(u -> u.getId().equals(receiver.getId()))) {
+                return ApiResponseHelper.badRequest("User already added to the travel");
             }
 
-            travel.getUsers().add(user);
+            travel.getUsers().add(receiver);
+            receiver.getTravels().add(travel);
 
-            user.getTravels().add(travel);
-
-            travelRepository.save(travel);
-
-            userRepository.save(user);
+            userRepository.save(receiver);
 
             return ApiResponseHelper.ok("Traveller added successfully", travel);
 
@@ -185,10 +202,23 @@ public class TravelService {
     public ApiResponse<?> leaveTravel(String id, User user) {
 
         try {
+
+            Optional<User> optionalUser = userRepository.findById(user.getId());
+
+            if(optionalUser.isEmpty())
+                return ApiResponseHelper.notFound("User not found");
+
+            user = optionalUser.get();
+
             Travel travel = travelRepository.findByIdAndUser(id, user).orElse(null);
 
             if (travel == null)
                 return ApiResponseHelper.notFound("Travel not Found");
+
+            travel.getUsers().remove(user);
+            user.getTravels().remove(travel);
+
+            travelRepository.save(travel);
 
             return ApiResponseHelper.ok("Leaved travel successfully", travel.getName());
         } catch (Exception exception) {
@@ -200,10 +230,23 @@ public class TravelService {
 
         try {
 
+            Optional<User> optionalUser = userRepository.findById(user.getId());
+
+            if(optionalUser.isEmpty())
+                return ApiResponseHelper.notFound("User not found");
+
+            user = optionalUser.get();
+
             Travel travel = travelRepository.findByIdAndUser(id, user).orElse(null);
 
             if (travel == null)
                 return ApiResponseHelper.notFound("Travel not found");
+
+            Set<User> users = travel.getUsers();
+            for (User u : users) {
+                u.getTravels().remove(travel);
+                userRepository.save(u);
+            }
 
             travelRepository.delete(travel);
 
@@ -216,12 +259,18 @@ public class TravelService {
     public ApiResponse<MovieListDTO> searchMovie(String id, SearchMovieDTO searchMovieDTO, User user) {
 
         try {
+
+            Optional<User> optionalUser = userRepository.findById(user.getId());
+
+            if(optionalUser.isEmpty())
+                return ApiResponseHelper.notFound("User not found");
+
+            user = optionalUser.get();
+
             Optional<Travel> optionalTravel = travelRepository.findById(id);
 
             if(optionalTravel.isEmpty())
                 return ApiResponseHelper.notFound("Travel not found");
-
-            Travel travel = optionalTravel.get();
 
             if(Objects.equals(searchMovieDTO.search(), "") || searchMovieDTO.search().isEmpty())
                 return ApiResponseHelper.badRequest("query search null");
@@ -260,4 +309,31 @@ public class TravelService {
             return ApiResponseHelper.internalError(exception);
         }
     }
+//
+//    public ApiResponse<List<TravelBasicDTO>> allTravels(User user) {
+//
+//        try {
+//
+//            Optional<User> optionalUser = userRepository.findById(user.getId());
+//
+//            if(optionalUser.isEmpty())
+//                return ApiResponseHelper.notFound("User not found");
+//
+//            user = optionalUser.get();
+//            List<TravelBasicDTO> travels = new ArrayList<>();
+//
+//            for(Travel travel : user.getTravels()) {
+//                travels.add(new TravelBasicDTO(
+//                        travel.getId(),
+//                        travel.getName(),
+//                        travel.getCollections().size(),
+//                        travel.getMovies().size(),
+//                        List
+//                        ))
+//            }
+//        }
+//
+//        } catch (Exception exception) {
+//            return ApiResponseHelper.internalError(exception);
+//        }
 }

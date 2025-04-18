@@ -28,9 +28,9 @@ public class CollectionController {
     @Autowired
     CollectionService collectionService;
 
-    @PostMapping("create")
+    @PostMapping(value = "create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<?>> createCollection(
-            @RequestBody RegisterCollectionDTO registerCollectionDTO) {
+            @ModelAttribute RegisterCollectionDTO registerCollectionDTO) {
 
         ApiResponse<?> response = collectionService.createCollection(registerCollectionDTO);
 

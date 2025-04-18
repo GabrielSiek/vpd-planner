@@ -14,6 +14,7 @@ import com.vpd.User.User;
 import com.vpd.User.UserRepository;
 import com.vpd.UserMovie.UserMovie;
 import com.vpd.UserMovie.UserMovieRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +43,14 @@ public class MovieService {
     public ApiResponse<?> addMovie(RegisterMovieDTO movieDTO, User user) {
 
         try {
+
+            Optional<User> optionalUser = userRepository.findById(user.getId());
+
+            if(optionalUser.isEmpty())
+                return ApiResponseHelper.notFound("User not found");
+
+            user = optionalUser.get();
+
             Optional<Travel> optionalTravel = user.getTravels().stream()
                     .filter(travel -> travel.getId().equals(movieDTO.travelId()))
                     .findFirst();
@@ -68,6 +77,8 @@ public class MovieService {
 
             List<UserMovie> userMovies = new ArrayList<>();
 
+            movieRepository.save(movie);
+
             for(User traveller : travel.getUsers()) {
                 UserMovie userMovie = new UserMovie(traveller, movie);
 
@@ -83,7 +94,11 @@ public class MovieService {
 
             movieRepository.save(movie);
 
-            return ApiResponseHelper.ok("Movie added successfully", movie.getTitle());
+            Optional<UserMovie> optionalUserMovie = userMovieRepository.findByUserAndMovie(user, movie);
+
+            UserMovie userMovie = optionalUserMovie.get();
+
+            return ApiResponseHelper.ok("Movie added successfully", objToDto(movie, userMovie));
         } catch (Exception exception) {
             return ApiResponseHelper.internalError(exception);
         }
@@ -91,6 +106,14 @@ public class MovieService {
 
     public ApiResponse<MovieDTO> getMovie(String id, User user) {
         try {
+
+            Optional<User> optionalUser = userRepository.findById(user.getId());
+
+            if(optionalUser.isEmpty())
+                return ApiResponseHelper.notFound("User not found");
+
+            user = optionalUser.get();
+
             Optional<Movie> optionalMovie = movieRepository.findById(id);
 
             if(optionalMovie.isEmpty())
@@ -110,37 +133,24 @@ public class MovieService {
                             collection.getName()))
                     .toList();
 
-            MovieDTO movieDTO = new MovieDTO(
-                    movie.getTravel().getId(),
-                    movie.getTravel().getName(),
-                    collectionDTOList,
-                    userMovie.getStars(),
-                    userMovie.isFavorite(),
-                    userMovie.isWatched(),
-                    movie.getOriginalTitle(),
-                    movie.getOriginalLanguage(),
-                    movie.getTitle(),
-                    movie.getOverview(),
-                    movie.getGenres(),
-                    movie.getReleaseDate(),
-                    movie.getVoteAverage(),
-                    movie.getVoteCount(),
-                    movie.getPopularity(),
-                    movie.getPosterPath(),
-                    movie.getBackgroundPath(),
-                    movie.isAdult()
-            );
-
-            return ApiResponseHelper.ok("Movie found successfully", movieDTO);
+            return ApiResponseHelper.ok("Movie found successfully", objToDto(movie, userMovie));
 
         } catch (Exception exception) {
             return ApiResponseHelper.internalError(exception);
         }
     }
 
+    @Transactional
     public ApiResponse<?> deleteMovie(String id, User user) {
 
         try {
+
+            Optional<User> optionalUser = userRepository.findById(user.getId());
+
+            if(optionalUser.isEmpty())
+                return ApiResponseHelper.notFound("User not found");
+
+            user = optionalUser.get();
 
             Optional<Movie> optionalMovie = movieRepository.findById(id);
 
@@ -178,6 +188,8 @@ public class MovieService {
             travel.getMovies().remove(movie);
             travelRepository.save(travel);
 
+            movieRepository.delete(movie);
+
             return ApiResponseHelper.ok("Movie deleted successfully", movie.getTitle());
         } catch (Exception exception) {
             return ApiResponseHelper.internalError(exception);
@@ -196,5 +208,35 @@ public class MovieService {
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
+    }
+
+    private MovieDTO objToDto(Movie movie, UserMovie userMovie) {
+
+        List<SimpleCollectionDTO> collections = new ArrayList<>();
+
+        for(Collection collection : movie.getCollections()) {
+            collections.add(new SimpleCollectionDTO(collection.getId(),
+                    collection.getName()));
+        }
+
+        return new MovieDTO(
+                movie.getTravel().getId(),
+                movie.getTravel().getName(),
+                collections,
+                userMovie.getStars(),
+                userMovie.isFavorite(),
+                userMovie.isWatched(),
+                movie.getOriginalTitle(),
+                movie.getOriginalLanguage(),
+                movie.getTitle(),
+                movie.getOverview(),
+                movie.getGenres(),
+                movie.getReleaseDate(),
+                movie.getVoteAverage(),
+                movie.getVoteCount(),
+                movie.getPopularity(),
+                movie.getPosterPath(),
+                movie.getBackgroundPath(),
+                movie.isAdult());
     }
 }

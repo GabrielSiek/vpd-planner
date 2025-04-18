@@ -35,10 +35,9 @@ public class TravelController {
 
     @PostMapping("create")
     public ResponseEntity<ApiResponse<?>> createTravel(
-            @RequestBody RegisterTravelDTO travel,
-            @AuthenticationPrincipal User user) {
+            @RequestBody RegisterTravelDTO travel) {
 
-        ApiResponse<?> response = travelService.createTravel(travel, user);
+        ApiResponse<?> response = travelService.createTravel(travel);
 
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
@@ -53,6 +52,14 @@ public class TravelController {
 
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
+
+//    @GetMapping("all")
+//    public ResponseEntity<ApiResponse<List<TravelBasicDTO>>> allTravels(@AuthenticationPrincipal User user) {
+//
+//        ApiResponse<List<TravelBasicDTO>> response = travelService.allTravels(user);
+//
+//        return ResponseEntity.status(response.getStatusCode()).body(response);
+//    }
 
     @PutMapping("{id}/update-dates")
     public ResponseEntity<ApiResponse<?>> updateDates(

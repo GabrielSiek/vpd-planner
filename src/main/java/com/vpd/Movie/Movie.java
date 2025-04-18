@@ -36,6 +36,7 @@ public class Movie {
 
     private String title;
 
+    @Column(length = 500)
     private String overview;
 
     private List<String> genres;
