@@ -1,6 +1,7 @@
 package com.vpd.User;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vpd.Friendship.Friendship;
 import com.vpd.Travel.Travel;
 import com.vpd.UserMovie.UserMovie;
@@ -34,9 +35,11 @@ public class User implements UserDetails {
 
     private String password;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "requester")
     private List<Friendship> sentFriendships;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "receiver")
     private List<Friendship> receivedFriendships;
 

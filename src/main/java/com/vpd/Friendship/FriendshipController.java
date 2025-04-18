@@ -1,10 +1,7 @@
 package com.vpd.Friendship;
 
 import com.vpd.ApiResponse.ApiResponse;
-import com.vpd.Friendship.DTO.FriendDTO;
-import com.vpd.Friendship.DTO.FriendshipDTO;
-import com.vpd.Friendship.DTO.FriendshipInviteDTO;
-import com.vpd.Friendship.DTO.FriendshipResponseDTO;
+import com.vpd.Friendship.DTO.*;
 import com.vpd.User.User;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,9 +38,9 @@ public class FriendshipController {
     }
 
     @GetMapping("invites")
-    public ResponseEntity<ApiResponse<List<FriendDTO>>> getAllInvites(@AuthenticationPrincipal User user) {
+    public ResponseEntity<ApiResponse<List<InviteDTO>>> getAllInvites(@AuthenticationPrincipal User user) {
 
-        ApiResponse<List<FriendDTO>> response = friendShipService.getAllInvites(user);
+        ApiResponse<List<InviteDTO>> response = friendShipService.getAllInvites(user);
 
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }

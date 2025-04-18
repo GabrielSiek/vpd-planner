@@ -2,10 +2,7 @@ package com.vpd.Friendship;
 
 import com.vpd.ApiResponse.ApiResponse;
 import com.vpd.ApiResponse.ApiResponseHelper;
-import com.vpd.Friendship.DTO.FriendDTO;
-import com.vpd.Friendship.DTO.FriendshipDTO;
-import com.vpd.Friendship.DTO.FriendshipInviteDTO;
-import com.vpd.Friendship.DTO.FriendshipResponseDTO;
+import com.vpd.Friendship.DTO.*;
 import com.vpd.User.User;
 import com.vpd.User.UserRepository;
 import jakarta.transaction.Transactional;
@@ -28,6 +25,13 @@ public class FriendShipService {
 
     public ApiResponse<FriendshipDTO> getFriendship(String id, User user) {
         try {
+            Optional<User> optionalUser = userRepository.findById(user.getId());
+
+            if(optionalUser.isEmpty())
+                return ApiResponseHelper.notFound("User not found");
+
+            user = optionalUser.get();
+
             ApiResponse<FriendshipDTO> verification = verifyFriendship(id);
 
             if (verification.getData() == null)
@@ -46,6 +50,13 @@ public class FriendShipService {
 
         public ApiResponse<List<FriendDTO>> getAllFriendships(User user) {
             try {
+
+                Optional<User> optionalUser = userRepository.findById(user.getId());
+
+                if(optionalUser.isEmpty())
+                    return ApiResponseHelper.notFound("User not found");
+
+                user = optionalUser.get();
 
                 List<FriendDTO> friends = Stream.concat(
                                 user.getSentFriendships().stream()
@@ -74,17 +85,26 @@ public class FriendShipService {
             }
         }
 
-    public ApiResponse<List<FriendDTO>> getAllInvites(User user) {
+    public ApiResponse<List<InviteDTO>> getAllInvites(User user) {
         try {
-            List<FriendDTO> invites = user.getReceivedFriendships().stream()
+
+            Optional<User> optionalUser = userRepository.findById(user.getId());
+
+            if(optionalUser.isEmpty())
+                return ApiResponseHelper.notFound("User not found");
+
+            user = optionalUser.get();
+
+            List<InviteDTO> invites = user.getReceivedFriendships().stream()
                     .filter(friendship -> friendship.getFriendshipStatus() == FriendshipStatus.PENDING)
-                    .map(friendship -> new FriendDTO(
+                    .map(friendship -> new InviteDTO(
                             friendship.getId(),
                             friendship.getRequester().getEmail(),
                             friendship.getRequester().getUsername(),
+                            friendship.getFriendshipStatus(),
                             friendship.getInvitationDate()
                         ))
-                    .sorted(Comparator.comparing(FriendDTO::name))
+                    .sorted(Comparator.comparing(InviteDTO::name))
                     .toList();
 
             return ApiResponseHelper.ok("Invites List", invites);
@@ -95,11 +115,18 @@ public class FriendShipService {
     }
 
     @Transactional
-    public ApiResponse<FriendshipDTO> sendInvite(FriendshipInviteDTO friendshipInviteDTO, User requester) {
+    public ApiResponse<FriendshipDTO> sendInvite(FriendshipInviteDTO friendshipInviteDTO, User user) {
         try {
+
+            Optional<User> optionalRequester = userRepository.findById(user.getId());
+            if(optionalRequester.isEmpty())
+                return ApiResponseHelper.notFound("Requester not found with email provided");
+
+            User requester = optionalRequester.get();
+
             Optional<User> optionalUser = Optional.ofNullable(userRepository.findByEmail(friendshipInviteDTO.receiverEmail()));
             if (optionalUser.isEmpty())
-                return ApiResponseHelper.notFound("User not found with email provided");
+                return ApiResponseHelper.notFound("Receiver not found with email provided");
 
             User receiver = optionalUser.get();
 
@@ -113,11 +140,12 @@ public class FriendShipService {
             friendship.setRequester(requester);
             friendship.setReceiver(receiver);
             friendship.setFriendshipStatus(FriendshipStatus.PENDING);
+            friendship.setInvitationDate(LocalDate.now());
 
             addFrienshipInvite(requester, receiver, friendship);
             friendshipRepository.save(friendship);
 
-            FriendshipDTO friendshipDTO = objectToDTO(friendship);
+            FriendshipDTO friendshipDTO = objectToDTO(friendship, requester.getEmail(), receiver.getEmail());
             return ApiResponseHelper.ok("Invite sent successfully", friendshipDTO);
 
         } catch (Exception exception) {
@@ -128,6 +156,14 @@ public class FriendShipService {
     @Transactional
     public ApiResponse<FriendshipDTO> responseInvite(String id, FriendshipResponseDTO friendshipResponseDTO, User user) {
         try {
+
+            Optional<User> optionalUser = userRepository.findById(user.getId());
+
+            if(optionalUser.isEmpty())
+                return ApiResponseHelper.notFound("User not found");
+
+            user = optionalUser.get();
+
             ApiResponse<FriendshipDTO> verification = verifyFriendship(id);
 
             if (verification.getData() == null)
@@ -162,8 +198,16 @@ public class FriendShipService {
     }
 
     @Transactional
-    public  ApiResponse<FriendshipDTO> deleteFriendship(String id, User user) {
+    public  ApiResponse<?> deleteFriendship(String id, User user) {
         try {
+
+            Optional<User> optionalUser = userRepository.findById(user.getId());
+
+            if(optionalUser.isEmpty())
+                return ApiResponseHelper.notFound("User not found");
+
+            user = optionalUser.get();
+
             ApiResponse<FriendshipDTO> verification = verifyFriendship(id);
 
             if (verification.getData() == null)
@@ -181,7 +225,7 @@ public class FriendShipService {
             Friendship friendship = optionalFriendship.get();
             friendshipRepository.delete(friendship);
 
-            return ApiResponseHelper.noContent("Friendship deleted");
+            return ApiResponseHelper.ok("Friendship deleted", friendship.getId());
 
         } catch (Exception exception) {
             return ApiResponseHelper.internalError(exception);
@@ -189,11 +233,23 @@ public class FriendShipService {
     }
 
     private void addFrienshipInvite(User requester, User receiver, Friendship friendship) {
+
         requester.getSentFriendships().add(friendship);
         receiver.getReceivedFriendships().add(friendship);
 
         userRepository.save(requester);
         userRepository.save(receiver);
+    }
+
+    private FriendshipDTO objectToDTO(Friendship friendship, String requester, String receiver) {
+        return new FriendshipDTO(
+                friendship.getId(),
+                requester,
+                receiver,
+                friendship.getFriendshipStatus(),
+                friendship.getInvitationDate(),
+                friendship.getAcceptanceDate()
+        );
     }
 
     private FriendshipDTO objectToDTO(Friendship friendship) {

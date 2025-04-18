@@ -47,6 +47,9 @@ public class AuthenticationController {
         if(this.userRepository.findByEmail(userDTO.email()) != null)
             return ResponseEntity.badRequest().body("Email already registered on system");
 
+        if(this.userRepository.findByUsername(userDTO.username()) != null)
+            return ResponseEntity.badRequest().body("Username already registered on system");
+
         String encryptedPassword = new BCryptPasswordEncoder().encode(userDTO.password());
 
         User newUser = new User(userDTO.email(), userDTO.username(), encryptedPassword);
