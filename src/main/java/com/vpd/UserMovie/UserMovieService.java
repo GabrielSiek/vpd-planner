@@ -38,8 +38,6 @@ public class UserMovieService {
     public ApiResponse<?> changeFavoriteStatus(String id, User user, boolean status) {
 
         try {
-            boolean NewStatus = !status;
-
             Optional<Movie> optionalMovie = movieRepository.findById(id);
 
             if(optionalMovie.isEmpty())
@@ -54,11 +52,11 @@ public class UserMovieService {
 
             UserMovie userMovie = optionalUserMovie.get();
 
-            userMovie.setFavorite(NewStatus);
+            userMovie.setFavorite(status);
 
             userMovieRepository.save(userMovie);
 
-            return ApiResponseHelper.ok("favorite set to: " + NewStatus, userMovie.getMovie().getTitle());
+            return ApiResponseHelper.ok("favorite set to: " + status, userMovie.getMovie().getTitle());
         } catch (Exception exception) {
             return ApiResponseHelper.internalError(exception);
         }
@@ -67,8 +65,6 @@ public class UserMovieService {
     public ApiResponse<?> changeViewStatus(String id, User user, boolean status) {
 
         try {
-            boolean NewStatus = !status;
-
             Optional<Movie> optionalMovie = movieRepository.findById(id);
 
             if(optionalMovie.isEmpty())
@@ -83,11 +79,11 @@ public class UserMovieService {
 
             UserMovie userMovie = optionalUserMovie.get();
 
-            userMovie.setWatched(NewStatus);
+            userMovie.setWatched(status);
 
             userMovieRepository.save(userMovie);
 
-            return ApiResponseHelper.ok("Watched set to: " + NewStatus, userMovie.getMovie().getTitle());
+            return ApiResponseHelper.ok("Watched set to: " + status, userMovie.getMovie().getTitle());
         } catch (Exception exception) {
             return ApiResponseHelper.internalError(exception);
         }

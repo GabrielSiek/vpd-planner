@@ -2,16 +2,24 @@ package com.vpd.Travel;
 
 import com.vpd.ApiResponse.ApiResponse;
 import com.vpd.ApiResponse.ApiResponseHelper;
+import com.vpd.Movie.DTO.MainPageMovieDTO;
+import com.vpd.Movie.DTO.MovieListDTO;
+import com.vpd.Movie.DTO.SearchMovieDTO;
+import com.vpd.Movie.Movie;
+import com.vpd.Movie.MovieRepository;
 import com.vpd.Travel.DTO.*;
 import com.vpd.User.User;
 import com.vpd.User.UserRepository;
+import com.vpd.UserMovie.UserMovie;
+import com.vpd.UserMovie.UserMovieRepository;
 import jakarta.transaction.Transactional;
+import org.springdoc.core.converters.models.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,6 +30,12 @@ public class TravelService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserMovieRepository userMovieRepository;
+
+    @Autowired
+    private MovieRepository movieRepository;
 
     public ApiResponse<TravelBasicDTO> getBasicTravelInformation(String id, User user) {
 
@@ -42,6 +56,7 @@ public class TravelService {
 
             TravelBasicDTO travelBasicDTO = new TravelBasicDTO(
                     travel.getId(),
+                    travel.getName(),
                     travel.getCollections().size(),
                     travel.getMovies().size(),
                     travellers,
@@ -90,10 +105,10 @@ public class TravelService {
         }
     }
 
-    public ApiResponse<?> renameTravel(RenameTravelDTO newTravel, User user) {
+    public ApiResponse<?> renameTravel(String id, RenameTravelDTO newTravel, User user) {
 
         try {
-            Travel travel = travelRepository.findByIdAndUser(newTravel.id(), user).orElse(null);
+            Travel travel = travelRepository.findByIdAndUser(id, user).orElse(null);
 
             if(travel == null)
                 return  ApiResponseHelper.notFound("Travel not found");
@@ -109,10 +124,10 @@ public class TravelService {
     }
 
     @Transactional
-    public ApiResponse<?> updateDates(UpdateDatesDTO updateDatesDTO, User user) {
+    public ApiResponse<?> updateDates(String id, UpdateDatesDTO updateDatesDTO, User user) {
 
         try {
-            Travel travel = travelRepository.findByIdAndUser(updateDatesDTO.id(), user).orElse(null);
+            Travel travel = travelRepository.findByIdAndUser(id, user).orElse(null);
 
             if (travel == null)
                 return ApiResponseHelper.notFound("Travel not found");
@@ -131,7 +146,7 @@ public class TravelService {
         }
     }
 
-    public ApiResponse<?> addTraveller(TravelInviteDTO travelInviteDTO, User user) {
+    public ApiResponse<?> addTraveller(String id, TravelInviteDTO travelInviteDTO, User user) {
 
         try {
 
@@ -140,7 +155,7 @@ public class TravelService {
             if (receiver.isEmpty())
                 return ApiResponseHelper.notFound("User not found");
 
-            Travel travel = travelRepository.findByIdAndUser(travelInviteDTO.id(), user).orElse(null);
+            Travel travel = travelRepository.findByIdAndUser(id, user).orElse(null);
 
             if (travel == null)
                 return ApiResponseHelper.notFound("Travel not Found");
@@ -148,7 +163,7 @@ public class TravelService {
             Set<User> users = travel.getUsers();
 
             for (User u : users) {
-                if (travelInviteDTO.id().equals(u.getId()))
+                if (id.equals(u.getId()))
                     return ApiResponseHelper.badRequest("User already added to the travel");
             }
 
@@ -193,6 +208,54 @@ public class TravelService {
             travelRepository.delete(travel);
 
             return ApiResponseHelper.ok("Travel deleted", travel.getName());
+        } catch (Exception exception) {
+            return ApiResponseHelper.internalError(exception);
+        }
+    }
+
+    public ApiResponse<MovieListDTO> searchMovie(String id, SearchMovieDTO searchMovieDTO, User user) {
+
+        try {
+            Optional<Travel> optionalTravel = travelRepository.findById(id);
+
+            if(optionalTravel.isEmpty())
+                return ApiResponseHelper.notFound("Travel not found");
+
+            Travel travel = optionalTravel.get();
+
+            if(Objects.equals(searchMovieDTO.search(), "") || searchMovieDTO.search().isEmpty())
+                return ApiResponseHelper.badRequest("query search null");
+
+            Page<Movie> movies = movieRepository.searchMoviesByTravel(id,
+                    searchMovieDTO.search(),
+                    searchMovieDTO.genres(),
+                    searchMovieDTO.genres().size(),
+                    PageRequest.of(searchMovieDTO.page(), searchMovieDTO.size()));
+
+            List<MainPageMovieDTO> mainPageMovieDTOS = new ArrayList<>();
+
+            for(Movie movie : movies) {
+                Optional<UserMovie> optionalUserMovie = userMovieRepository.findByUserAndMovie(user, movie);
+
+                if(optionalUserMovie.isEmpty())
+                    return ApiResponseHelper.badRequest("Error finding movies for this user");
+
+                MainPageMovieDTO mainPageMovieDTO = new MainPageMovieDTO(
+                        movie.getId(),
+                        movie.getTitle(),
+                        movie.getPosterPath(),
+                        movie.getGenres(),
+                        optionalUserMovie.get().getStars(),
+                        optionalUserMovie.get().isFavorite(),
+                        optionalUserMovie.get().isWatched());
+
+                mainPageMovieDTOS.add(mainPageMovieDTO);
+            }
+
+            MovieListDTO movieListDTO = new MovieListDTO(mainPageMovieDTOS, movies.getTotalPages());
+
+            return ApiResponseHelper.ok("Movies found: " + movies.getTotalElements(), movieListDTO);
+
         } catch (Exception exception) {
             return ApiResponseHelper.internalError(exception);
         }

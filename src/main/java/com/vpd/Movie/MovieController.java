@@ -26,18 +26,17 @@ public class MovieController {
     @Autowired
     private MovieService movieService;
 
-    @GetMapping("/search")
-    public String searchMovie(
+    @GetMapping("/search-tmdb")
+    public String addMovieFromTmdb(
             @RequestParam String query,
             @RequestParam(defaultValue = "1") String page) {
         try {
-            return tmdbService.searchMovie(query, page);
+            return tmdbService.addMovieFromTmdb(query, page);
         } catch (IOException e) {
             return "Error: " + e.getMessage();
         }
     }
 
-    //create e delete precisa atualizar o usermovierepository tbm
     @PostMapping("/add")
     public ResponseEntity<ApiResponse<?>> addMovie(
             @RequestBody RegisterMovieDTO movieDTO,
@@ -69,5 +68,4 @@ public class MovieController {
         return ResponseEntity.status(response.getStatusCode()).body(response);
 
     }
-    //A lógica para favoritar, dar nota e marcar como assistido vão ficar no usermoviecontroller
 }

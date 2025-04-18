@@ -21,7 +21,7 @@ public class TmdbService {
     @Value("${tmdb.api.url}")
     private String baseUrl;
 
-    public String searchMovie(String query, String pagina) throws IOException {
+    public String addMovieFromTmdb(String query, String pagina) throws IOException {
         HttpUrl url = HttpUrl.parse(baseUrl + "/3/search/movie").newBuilder()
                 .addQueryParameter("query", query)
                 .addQueryParameter("include_adult", "false")

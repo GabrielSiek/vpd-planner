@@ -48,6 +48,8 @@ public class FriendshipController {
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 
+    //adicionar convites enviados ou recebidos n sei qual eu implementei
+
     @PostMapping("invite")
     public ResponseEntity<ApiResponse<?>> sendInvite(
             @RequestBody FriendshipInviteDTO friendshipInviteDTO,
@@ -59,7 +61,7 @@ public class FriendshipController {
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 
-    @PostMapping("{id}/response")
+    @PutMapping("{id}/response")
     public ResponseEntity<ApiResponse<?>> responseInvite(
             @PathVariable String id,
             @RequestBody FriendshipResponseDTO friendshipResponse,

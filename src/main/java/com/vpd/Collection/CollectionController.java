@@ -7,6 +7,8 @@ import com.vpd.Movie.DTO.MainPageMovieDTO;
 import com.vpd.Movie.DTO.MovieIdDTO;
 import com.vpd.Collection.DTO.UpdatePosterCollectionDTO;
 import com.vpd.Image.Image;
+import com.vpd.Movie.DTO.MovieListDTO;
+import com.vpd.Movie.DTO.SearchMovieDTO;
 import com.vpd.User.User;
 import com.vpd.UserMovie.DTO.UserMovieDTO;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,7 +37,7 @@ public class CollectionController {
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 
-    @PostMapping("{id}/update-collection")
+    @PutMapping("{id}/update-poster")
     public ResponseEntity<ApiResponse<?>> updatePoster(
             @PathVariable String id,
             @RequestBody UpdatePosterCollectionDTO newPoster) {
@@ -45,7 +47,7 @@ public class CollectionController {
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 
-    @PostMapping("{id}/update-name")
+    @PutMapping("{id}/update-name")
     public ResponseEntity<ApiResponse<?>> updateName(
             @PathVariable String id,
             @RequestBody UpdateNameCollectionDTO newName) {
@@ -65,7 +67,7 @@ public class CollectionController {
                 .body(poster.getImageData());
     }
 
-    @PostMapping("{id}/add-movie")
+    @PutMapping("{id}/add-movie")
     public ResponseEntity<ApiResponse<?>> addMovie(
             @PathVariable String id,
             @RequestBody MovieIdDTO movieIdDTO) {
@@ -103,4 +105,14 @@ public class CollectionController {
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 
+    @PostMapping("{id}/search-movies")
+    public ResponseEntity<ApiResponse<MovieListDTO>> searchMovies(
+            @PathVariable String id,
+            @RequestBody SearchMovieDTO searchMovieDTO,
+            @AuthenticationPrincipal User user) {
+
+        ApiResponse<MovieListDTO> response = collectionService.searchMovie(id, searchMovieDTO, user);
+
+        return ResponseEntity.status(response.getStatusCode()).body(response);
+    }
 }

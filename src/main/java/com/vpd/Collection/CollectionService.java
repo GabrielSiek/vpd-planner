@@ -9,6 +9,8 @@ import com.vpd.Movie.DTO.MovieIdDTO;
 import com.vpd.Collection.DTO.UpdatePosterCollectionDTO;
 import com.vpd.Image.Image;
 import com.vpd.Image.ImageService;
+import com.vpd.Movie.DTO.MovieListDTO;
+import com.vpd.Movie.DTO.SearchMovieDTO;
 import com.vpd.Movie.Movie;
 import com.vpd.Movie.MovieRepository;
 import com.vpd.Travel.Travel;
@@ -19,13 +21,12 @@ import com.vpd.UserMovie.UserMovie;
 import com.vpd.UserMovie.UserMovieRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 //arrumar a logica para todos optional virarem um objeto para n quebrar o padrao
 //sem verificacao de usuario
@@ -244,4 +245,53 @@ public class CollectionService {
             return ApiResponseHelper.internalError(exception);
         }
     }
+
+    public ApiResponse<MovieListDTO> searchMovie(String id, SearchMovieDTO searchMovieDTO, User user) {
+
+        try {
+            Optional<Collection> optionalCollection = collectionRepository.findById(id);
+
+            if(optionalCollection.isEmpty())
+                return ApiResponseHelper.notFound("Collection not found");
+
+            Collection collection = optionalCollection.get();
+
+            if(Objects.equals(searchMovieDTO.search(), "") || searchMovieDTO.search().isEmpty())
+                return ApiResponseHelper.badRequest("query search null");
+
+            Page<Movie> movies = movieRepository.searchMoviesByCollection(id,
+                    searchMovieDTO.search(),
+                    searchMovieDTO.genres(),
+                    searchMovieDTO.genres().size(),
+                    PageRequest.of(searchMovieDTO.page(), searchMovieDTO.size()));
+
+            List<MainPageMovieDTO> mainPageMovieDTOS = new ArrayList<>();
+
+            for(Movie movie : movies) {
+                Optional<UserMovie> optionalUserMovie = userMovieRepository.findByUserAndMovie(user, movie);
+
+                if(optionalUserMovie.isEmpty())
+                    return ApiResponseHelper.badRequest("Error finding movies for this user");
+
+                MainPageMovieDTO mainPageMovieDTO = new MainPageMovieDTO(
+                        movie.getId(),
+                        movie.getTitle(),
+                        movie.getPosterPath(),
+                        movie.getGenres(),
+                        optionalUserMovie.get().getStars(),
+                        optionalUserMovie.get().isFavorite(),
+                        optionalUserMovie.get().isWatched());
+
+                mainPageMovieDTOS.add(mainPageMovieDTO);
+            }
+
+            MovieListDTO movieListDTO = new MovieListDTO(mainPageMovieDTOS, movies.getTotalPages());
+
+            return ApiResponseHelper.ok("Movies found: " + movies.getTotalElements(), movieListDTO);
+
+        } catch (Exception exception) {
+            return ApiResponseHelper.internalError(exception);
+        }
+    }
+
 }

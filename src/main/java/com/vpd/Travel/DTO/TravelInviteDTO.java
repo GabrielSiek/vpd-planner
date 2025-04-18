@@ -1,5 +1,4 @@
 package com.vpd.Travel.DTO;
 
-public record TravelInviteDTO(String id,
-                              String email) {
+public record TravelInviteDTO(String email) {
 }
