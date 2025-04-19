@@ -3,7 +3,6 @@ package com.vpd.Travel;
 import com.vpd.ApiResponse.ApiResponse;
 import com.vpd.ApiResponse.ApiResponseHelper;
 import com.vpd.Movie.DTO.MainPageMovieDTO;
-import com.vpd.Movie.DTO.MovieListDTO;
 import com.vpd.Movie.DTO.SearchMovieDTO;
 import com.vpd.Movie.Movie;
 import com.vpd.Movie.MovieRepository;
@@ -13,10 +12,7 @@ import com.vpd.User.UserRepository;
 import com.vpd.UserMovie.UserMovie;
 import com.vpd.UserMovie.UserMovieRepository;
 import jakarta.transaction.Transactional;
-import org.springdoc.core.converters.models.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -192,6 +188,12 @@ public class TravelService {
 
             userRepository.save(receiver);
 
+            for(Movie movie : travel.getMovies()) {
+                UserMovie userMovie = new UserMovie(receiver, movie);
+
+                userMovieRepository.save(userMovie);
+            }
+
             return ApiResponseHelper.ok("Traveller added successfully", travel);
 
         } catch (Exception exception) {
@@ -256,7 +258,7 @@ public class TravelService {
         }
     }
 
-    public ApiResponse<MovieListDTO> searchMovie(String id, SearchMovieDTO searchMovieDTO, User user) {
+    public ApiResponse<List<MainPageMovieDTO>> searchMovie(String id, SearchMovieDTO searchMovieDTO, User user) {
 
         try {
 
@@ -271,15 +273,25 @@ public class TravelService {
 
             if(optionalTravel.isEmpty())
                 return ApiResponseHelper.notFound("Travel not found");
+            
+            Travel travel = optionalTravel.get();
 
-            if(Objects.equals(searchMovieDTO.search(), "") || searchMovieDTO.search().isEmpty())
-                return ApiResponseHelper.badRequest("query search null");
+            List<Movie> movies = travel.getMovies().stream()
+                    .filter(movie -> {
+                        boolean matchesTitle = true;
+                        boolean matchesGenre = true;
 
-            Page<Movie> movies = movieRepository.searchMoviesByTravel(id,
-                    searchMovieDTO.search(),
-                    searchMovieDTO.genres(),
-                    searchMovieDTO.genres().size(),
-                    PageRequest.of(searchMovieDTO.page(), searchMovieDTO.size()));
+                        if (searchMovieDTO.search() != null && !searchMovieDTO.search().isEmpty()) {
+                            matchesTitle = movie.getTitle().toLowerCase().contains(searchMovieDTO.search().toLowerCase());
+                        }
+
+                        if (searchMovieDTO.genres() != null && !searchMovieDTO.genres().isEmpty()) {
+                            matchesGenre = movie.getGenres().containsAll(searchMovieDTO.genres());
+                        }
+
+                        return matchesTitle && matchesGenre;
+                    })
+                    .toList();
 
             List<MainPageMovieDTO> mainPageMovieDTOS = new ArrayList<>();
 
@@ -301,15 +313,14 @@ public class TravelService {
                 mainPageMovieDTOS.add(mainPageMovieDTO);
             }
 
-            MovieListDTO movieListDTO = new MovieListDTO(mainPageMovieDTOS, movies.getTotalPages());
 
-            return ApiResponseHelper.ok("Movies found: " + movies.getTotalElements(), movieListDTO);
+            return ApiResponseHelper.ok("Movies found: " + mainPageMovieDTOS.size(), mainPageMovieDTOS);
 
         } catch (Exception exception) {
             return ApiResponseHelper.internalError(exception);
         }
     }
-//
+
 //    public ApiResponse<List<TravelBasicDTO>> allTravels(User user) {
 //
 //        try {

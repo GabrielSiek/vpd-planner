@@ -1,4 +1,4 @@
 package com.vpd.Collection.DTO;
 
-public record UpdateNameCollectionDTO(String name) {
+public record   UpdateNameCollectionDTO(String name) {
 }

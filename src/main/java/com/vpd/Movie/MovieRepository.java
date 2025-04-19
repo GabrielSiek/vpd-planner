@@ -32,22 +32,4 @@ public interface MovieRepository extends JpaRepository<Movie, String> {
             @Param("genresSize") int genresSize,
             Pageable pageable
     );
-
-    @Query("""
-    SELECT m FROM Collection c 
-    JOIN c.movies m
-    WHERE c.id = :collectionId
-    AND LOWER(m.title) LIKE LOWER(CONCAT('%', :search, '%'))
-    AND (:genres IS NULL OR :genresSize = 0 OR EXISTS (
-        SELECT g FROM m.genres g WHERE g IN :genres
-    ))
-""")
-    Page<Movie> searchMoviesByCollection(
-            @Param("collectionId") String collectionId,
-            @Param("search") String search,
-            @Param("genres") List<String> genres,
-            @Param("genresSize") int genresSize,
-            Pageable pageable
-    );
-
 }

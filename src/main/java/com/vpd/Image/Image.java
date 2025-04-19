@@ -22,7 +22,7 @@ public class Image {
 
     private String imageType;
 
-    @Lob
-    @Column(name = "image_data")
+    @Column(name = "image_data", columnDefinition = "bytea")
     private byte[] imageData;
+
 }

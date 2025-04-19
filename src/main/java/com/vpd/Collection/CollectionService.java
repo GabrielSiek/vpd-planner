@@ -3,32 +3,29 @@ package com.vpd.Collection;
 import com.vpd.ApiResponse.ApiResponse;
 import com.vpd.ApiResponse.ApiResponseHelper;
 import com.vpd.Collection.DTO.RegisterCollectionDTO;
+import com.vpd.Collection.DTO.SimpleCollectionDTO;
 import com.vpd.Collection.DTO.UpdateNameCollectionDTO;
 import com.vpd.Movie.DTO.MainPageMovieDTO;
 import com.vpd.Movie.DTO.MovieIdDTO;
 import com.vpd.Collection.DTO.UpdatePosterCollectionDTO;
 import com.vpd.Image.Image;
 import com.vpd.Image.ImageService;
-import com.vpd.Movie.DTO.MovieListDTO;
 import com.vpd.Movie.DTO.SearchMovieDTO;
 import com.vpd.Movie.Movie;
 import com.vpd.Movie.MovieRepository;
 import com.vpd.Travel.Travel;
 import com.vpd.Travel.TravelRepository;
 import com.vpd.User.User;
-import com.vpd.UserMovie.DTO.UserMovieDTO;
+import com.vpd.User.UserRepository;
 import com.vpd.UserMovie.UserMovie;
 import com.vpd.UserMovie.UserMovieRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
-//arrumar a logica para todos optional virarem um objeto para n quebrar o padrao
 //sem verificacao de usuario
 @Service
 public class CollectionService {
@@ -48,6 +45,8 @@ public class CollectionService {
     @Autowired
     private UserMovieRepository userMovieRepository;
 
+    @Autowired
+    private UserRepository userRepository;
 
     @Transactional
     public ApiResponse<?> createCollection(RegisterCollectionDTO registerCollectionDTO) {
@@ -75,7 +74,7 @@ public class CollectionService {
 
         collectionRepository.save(collection);
 
-        return ApiResponseHelper.ok("Collection created succesfully", collection.getName());
+        return ApiResponseHelper.ok("Collection created succesfully", new SimpleCollectionDTO(collection.getId(), collection.getName()));
 
         } catch (Exception exception) {
             return ApiResponseHelper.internalError(exception);
@@ -97,6 +96,8 @@ public class CollectionService {
             if(optionalCollection.isEmpty())
                 return ApiResponseHelper.notFound("Collection not found");
 
+            Collection collection = optionalCollection.get();
+
             MultipartFile poster = file.poster();
 
             Image newPoster = imageService.addImage(file.poster());
@@ -106,9 +107,9 @@ public class CollectionService {
 
             imageService.addImage(poster);
 
-            optionalCollection.get().setPoster(newPoster);
+            collection.setPoster(newPoster);
 
-            collectionRepository.save(optionalCollection.get());
+            collectionRepository.save(collection);
 
             return ApiResponseHelper.ok("Poster updated successfully", newPoster.getImageName());
 
@@ -126,11 +127,13 @@ public class CollectionService {
             if(optionalCollection.isEmpty())
                 return ApiResponseHelper.notFound("Collection not found");
 
-            optionalCollection.get().setName(newName.name());
+            Collection collection = optionalCollection.get();
 
-            collectionRepository.save(optionalCollection.get());
+            collection.setName(newName.name());
 
-            return ApiResponseHelper.ok("Poster updated successfully", newName.name());
+            collectionRepository.save(collection);
+
+            return ApiResponseHelper.ok("Name updated successfully", newName.name());
 
         }  catch (Exception exception) {
             return ApiResponseHelper.internalError(exception);
@@ -151,13 +154,16 @@ public class CollectionService {
             else if(optionalMovie.isEmpty())
                 return ApiResponseHelper.notFound("Movie not found");
 
-            optionalCollection.get().getMovies().add(optionalMovie.get());
-            optionalMovie.get().getCollections().add(optionalCollection.get());
+            Collection collection = optionalCollection.get();
+            Movie movie = optionalMovie.get();
 
-            collectionRepository.save(optionalCollection.get());
-            movieRepository.save(optionalMovie.get());
+            collection.getMovies().add(optionalMovie.get());
+            movie.getCollections().add(optionalCollection.get());
 
-            return ApiResponseHelper.ok("Movie added successfully", optionalMovie.get().getTitle());
+            collectionRepository.save(collection);
+            movieRepository.save(movie);
+
+            return ApiResponseHelper.ok("Movie added successfully", movie.getTitle());
 
         } catch (Exception exception) {
             return ApiResponseHelper.internalError(exception);
@@ -178,13 +184,16 @@ public class CollectionService {
             else if(optionalMovie.isEmpty())
                 return ApiResponseHelper.notFound("Movie not found");
 
-            optionalCollection.get().getMovies().remove(optionalMovie.get());
-            optionalMovie.get().getCollections().remove(optionalCollection.get());
+            Collection collection = optionalCollection.get();
+            Movie movie = optionalMovie.get();
 
-            collectionRepository.save(optionalCollection.get());
-            movieRepository.save(optionalMovie.get());
+            collection.getMovies().remove(movie);
+            movie.getCollections().remove(collection);
 
-            return ApiResponseHelper.ok("Movie removed successfully", optionalMovie.get().getTitle());
+            collectionRepository.save(collection);
+            movieRepository.save(movie);
+
+            return ApiResponseHelper.ok("Movie removed successfully", movie.getTitle());
 
         } catch (Exception exception) {
             return ApiResponseHelper.internalError(exception);
@@ -194,6 +203,14 @@ public class CollectionService {
     public ApiResponse<List<MainPageMovieDTO>> getMovies(String id, User user) {
 
         try {
+
+            Optional<User> optionalUser = userRepository.findById(user.getId());
+
+            if(optionalUser.isEmpty())
+                return ApiResponseHelper.notFound("User not found");
+
+            user = optionalUser.get();
+
             Optional<Collection> optionalCollection = collectionRepository.findById(id);
 
             if(optionalCollection.isEmpty())
@@ -201,7 +218,9 @@ public class CollectionService {
 
             List<MainPageMovieDTO> userMovieList = new ArrayList<>();
 
-            for (Movie movie : optionalCollection.get().getMovies()) {
+            Collection collection = optionalCollection.get();
+
+            for (Movie movie : collection.getMovies()) {
                 Optional<UserMovie> optionalUserMovie = userMovieRepository.findByUserAndMovie(user, movie);
 
                 optionalUserMovie.ifPresent(userMovie -> userMovieList.add(new MainPageMovieDTO(
@@ -231,24 +250,33 @@ public class CollectionService {
             if(optionalCollection.isEmpty())
                 return ApiResponseHelper.notFound("Collection not Found");
 
-            Travel travel = optionalCollection.get().getTravel();
+            Collection collection = optionalCollection.get();
 
-            travel.getCollections().remove(optionalCollection.get());
+            Travel travel = collection.getTravel();
 
-            collectionRepository.delete(optionalCollection.get());
+            travel.getCollections().remove(collection);
+
+            collectionRepository.delete(collection);
             travelRepository.save(travel);
 
-            imageService.deleteImage(optionalCollection.get().getPoster());
+            imageService.deleteImage(collection.getPoster());
 
-            return ApiResponseHelper.ok("Colletion deleted successfully", optionalCollection.get().getName());
+            return ApiResponseHelper.ok("Colletion deleted successfully", collection.getName());
         } catch (Exception exception) {
             return ApiResponseHelper.internalError(exception);
         }
     }
 
-    public ApiResponse<MovieListDTO> searchMovie(String id, SearchMovieDTO searchMovieDTO, User user) {
+    public ApiResponse<List<MainPageMovieDTO>> searchMovie(String id, SearchMovieDTO searchMovieDTO, User user) {
 
         try {
+            Optional<User> optionalUser = userRepository.findById(user.getId());
+
+            if(optionalUser.isEmpty())
+                return ApiResponseHelper.notFound("User not found");
+
+            user = optionalUser.get();
+
             Optional<Collection> optionalCollection = collectionRepository.findById(id);
 
             if(optionalCollection.isEmpty())
@@ -256,42 +284,56 @@ public class CollectionService {
 
             Collection collection = optionalCollection.get();
 
-            if(Objects.equals(searchMovieDTO.search(), "") || searchMovieDTO.search().isEmpty())
-                return ApiResponseHelper.badRequest("query search null");
+            List<Movie> movies = collection.getMovies().stream()
+                        .filter(movie -> {
+                            boolean matchesTitle = true;
+                            boolean matchesGenre = true;
 
-            Page<Movie> movies = movieRepository.searchMoviesByCollection(id,
-                    searchMovieDTO.search(),
-                    searchMovieDTO.genres(),
-                    searchMovieDTO.genres().size(),
-                    PageRequest.of(searchMovieDTO.page(), searchMovieDTO.size()));
+                            if (searchMovieDTO.search() != null && !searchMovieDTO.search().isEmpty()) {
+                                matchesTitle = movie.getTitle().toLowerCase().contains(searchMovieDTO.search().toLowerCase());
+                            }
+
+                            if (searchMovieDTO.genres() != null && !searchMovieDTO.genres().isEmpty()) {
+                                matchesGenre = movie.getGenres().containsAll(searchMovieDTO.genres());
+                            }
+
+                            return matchesTitle && matchesGenre;
+                        })
+                        .toList();
 
             List<MainPageMovieDTO> mainPageMovieDTOS = new ArrayList<>();
 
             for(Movie movie : movies) {
                 Optional<UserMovie> optionalUserMovie = userMovieRepository.findByUserAndMovie(user, movie);
 
-                if(optionalUserMovie.isEmpty())
-                    return ApiResponseHelper.badRequest("Error finding movies for this user");
+                UserMovie userMovie;
+
+                if(optionalUserMovie.isEmpty()) {
+                    userMovie = new UserMovie(user, movie);
+                    userMovieRepository.save(userMovie);
+                    System.out.println("User Movie relation created to: " + movie.getTitle() + "and " + user.getUsername());
+                } else {
+                    userMovie = optionalUserMovie.get();
+                }
 
                 MainPageMovieDTO mainPageMovieDTO = new MainPageMovieDTO(
                         movie.getId(),
                         movie.getTitle(),
                         movie.getPosterPath(),
                         movie.getGenres(),
-                        optionalUserMovie.get().getStars(),
-                        optionalUserMovie.get().isFavorite(),
-                        optionalUserMovie.get().isWatched());
+                        userMovie.getStars(),
+                        userMovie.isFavorite(),
+                        userMovie.isWatched());
 
                 mainPageMovieDTOS.add(mainPageMovieDTO);
             }
 
-            MovieListDTO movieListDTO = new MovieListDTO(mainPageMovieDTOS, movies.getTotalPages());
-
-            return ApiResponseHelper.ok("Movies found: " + movies.getTotalElements(), movieListDTO);
+            return ApiResponseHelper.ok("Movies found: " + mainPageMovieDTOS.size(), mainPageMovieDTOS);
 
         } catch (Exception exception) {
             return ApiResponseHelper.internalError(exception);
         }
     }
+
 
 }

@@ -7,10 +7,8 @@ import com.vpd.Movie.DTO.MainPageMovieDTO;
 import com.vpd.Movie.DTO.MovieIdDTO;
 import com.vpd.Collection.DTO.UpdatePosterCollectionDTO;
 import com.vpd.Image.Image;
-import com.vpd.Movie.DTO.MovieListDTO;
 import com.vpd.Movie.DTO.SearchMovieDTO;
 import com.vpd.User.User;
-import com.vpd.UserMovie.DTO.UserMovieDTO;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -40,7 +38,7 @@ public class CollectionController {
     @PutMapping("{id}/update-poster")
     public ResponseEntity<ApiResponse<?>> updatePoster(
             @PathVariable String id,
-            @RequestBody UpdatePosterCollectionDTO newPoster) {
+            @ModelAttribute UpdatePosterCollectionDTO newPoster) {
 
         ApiResponse<?> response = collectionService.updatePoster(id ,newPoster);
 
@@ -106,12 +104,12 @@ public class CollectionController {
     }
 
     @PostMapping("{id}/search-movies")
-    public ResponseEntity<ApiResponse<MovieListDTO>> searchMovies(
+    public ResponseEntity<ApiResponse<List<MainPageMovieDTO>>> searchMovies(
             @PathVariable String id,
             @RequestBody SearchMovieDTO searchMovieDTO,
             @AuthenticationPrincipal User user) {
 
-        ApiResponse<MovieListDTO> response = collectionService.searchMovie(id, searchMovieDTO, user);
+        ApiResponse<List<MainPageMovieDTO>> response = collectionService.searchMovie(id, searchMovieDTO, user);
 
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }

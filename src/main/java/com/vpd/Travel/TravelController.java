@@ -1,9 +1,7 @@
 package com.vpd.Travel;
 
 import com.vpd.ApiResponse.ApiResponse;
-import com.vpd.ApiResponse.ApiResponseHelper;
 import com.vpd.Movie.DTO.MainPageMovieDTO;
-import com.vpd.Movie.DTO.MovieListDTO;
 import com.vpd.Movie.DTO.SearchMovieDTO;
 import com.vpd.Travel.DTO.*;
 import com.vpd.User.User;
@@ -104,12 +102,12 @@ public class TravelController {
     }
 
     @PostMapping("{id}/search-movies")
-    public ResponseEntity<ApiResponse<MovieListDTO>> searchMovies(
+    public ResponseEntity<ApiResponse<List<MainPageMovieDTO>>> searchMovies(
             @PathVariable String id,
             @RequestBody SearchMovieDTO searchMovieDTO,
             @AuthenticationPrincipal User user) {
 
-        ApiResponse<MovieListDTO> response = travelService.searchMovie(id, searchMovieDTO, user);
+        ApiResponse<List<MainPageMovieDTO>> response = travelService.searchMovie(id, searchMovieDTO, user);
 
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }

@@ -214,13 +214,16 @@ public class MovieService {
 
         List<SimpleCollectionDTO> collections = new ArrayList<>();
 
-        for(Collection collection : movie.getCollections()) {
-            collections.add(new SimpleCollectionDTO(collection.getId(),
-                    collection.getName()));
+        if(movie.getCollections() != null) {
+            for (Collection collection : movie.getCollections()) {
+                collections.add(new SimpleCollectionDTO(collection.getId(),
+                        collection.getName()));
+            }
         }
 
         return new MovieDTO(
                 movie.getTravel().getId(),
+                movie.getId(),
                 movie.getTravel().getName(),
                 collections,
                 userMovie.getStars(),
