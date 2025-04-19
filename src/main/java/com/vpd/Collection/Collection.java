@@ -30,13 +30,16 @@ public class Collection {
     @JoinColumn(name = "poster_id")
     private Image poster;
 
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "logo_id")
+    private Image logo;
+
     @ManyToMany
     @JoinTable(
             name = "collection_movie",
             joinColumns = @JoinColumn(name = "collection_id"),
             inverseJoinColumns = @JoinColumn(name = "movie_id"))
     private Set<Movie> movies;
-    //quando criar tem q criar como um hashset
 
     @ManyToOne
     @JoinColumn(name = "travel_id")

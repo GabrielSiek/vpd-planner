@@ -2,6 +2,7 @@ package com.vpd.Collection;
 
 import com.vpd.ApiResponse.ApiResponse;
 import com.vpd.Collection.DTO.RegisterCollectionDTO;
+import com.vpd.Collection.DTO.UpdateLogoDTO;
 import com.vpd.Collection.DTO.UpdateNameCollectionDTO;
 import com.vpd.Movie.DTO.MainPageMovieDTO;
 import com.vpd.Movie.DTO.MovieIdDTO;

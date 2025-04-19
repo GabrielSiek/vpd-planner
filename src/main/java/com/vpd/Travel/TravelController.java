@@ -1,6 +1,8 @@
 package com.vpd.Travel;
 
 import com.vpd.ApiResponse.ApiResponse;
+import com.vpd.Collection.DTO.SearchCollectionDTO;
+import com.vpd.Collection.DTO.SimpleCollectionDTO;
 import com.vpd.Movie.DTO.MainPageMovieDTO;
 import com.vpd.Movie.DTO.SearchMovieDTO;
 import com.vpd.Travel.DTO.*;
@@ -51,13 +53,27 @@ public class TravelController {
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 
-//    @GetMapping("all")
-//    public ResponseEntity<ApiResponse<List<TravelBasicDTO>>> allTravels(@AuthenticationPrincipal User user) {
-//
-//        ApiResponse<List<TravelBasicDTO>> response = travelService.allTravels(user);
-//
-//        return ResponseEntity.status(response.getStatusCode()).body(response);
-//    }
+    @GetMapping("{id}/collections")
+    public ResponseEntity<ApiResponse<List<SimpleCollectionDTO>>> getCollections(
+            @PathVariable String id,
+            @AuthenticationPrincipal User user) {
+
+        ApiResponse<List<SimpleCollectionDTO>> response = travelService.getCollections(id, user);
+
+        return ResponseEntity.status(response.getStatusCode()).body(response);
+    }
+
+    @PostMapping("{id}/search-collections")
+    public ResponseEntity<ApiResponse<List<SimpleCollectionDTO>>> searchCollections(
+            @PathVariable String id,
+            @RequestBody SearchCollectionDTO search,
+            @AuthenticationPrincipal User user) {
+
+        ApiResponse<List<SimpleCollectionDTO>> response = travelService.searchCollections(id, search, user);
+
+        return ResponseEntity.status(response.getStatusCode()).body(response);
+    }
+
 
     @PutMapping("{id}/update-dates")
     public ResponseEntity<ApiResponse<?>> updateDates(

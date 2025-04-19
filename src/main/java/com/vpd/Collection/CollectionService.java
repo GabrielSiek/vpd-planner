@@ -2,12 +2,9 @@ package com.vpd.Collection;
 
 import com.vpd.ApiResponse.ApiResponse;
 import com.vpd.ApiResponse.ApiResponseHelper;
-import com.vpd.Collection.DTO.RegisterCollectionDTO;
-import com.vpd.Collection.DTO.SimpleCollectionDTO;
-import com.vpd.Collection.DTO.UpdateNameCollectionDTO;
+import com.vpd.Collection.DTO.*;
 import com.vpd.Movie.DTO.MainPageMovieDTO;
 import com.vpd.Movie.DTO.MovieIdDTO;
-import com.vpd.Collection.DTO.UpdatePosterCollectionDTO;
 import com.vpd.Image.Image;
 import com.vpd.Image.ImageService;
 import com.vpd.Movie.DTO.SearchMovieDTO;
@@ -334,6 +331,5 @@ public class CollectionService {
             return ApiResponseHelper.internalError(exception);
         }
     }
-
 
 }

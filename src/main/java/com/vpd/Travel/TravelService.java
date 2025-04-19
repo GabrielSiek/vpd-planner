@@ -2,6 +2,8 @@ package com.vpd.Travel;
 
 import com.vpd.ApiResponse.ApiResponse;
 import com.vpd.ApiResponse.ApiResponseHelper;
+import com.vpd.Collection.DTO.SearchCollectionDTO;
+import com.vpd.Collection.DTO.SimpleCollectionDTO;
 import com.vpd.Movie.DTO.MainPageMovieDTO;
 import com.vpd.Movie.DTO.SearchMovieDTO;
 import com.vpd.Movie.Movie;
@@ -44,10 +46,10 @@ public class TravelService {
 
             user = optionalUser.get();
 
-            Optional<Travel> optionalTravel = travelRepository.findById(id);
+            Optional<Travel> optionalTravel = travelRepository.findByIdAndUser(id, user);
 
             if (optionalTravel.isEmpty())
-                return ApiResponseHelper.badRequest("Unable to find travel with ID provided");
+                return ApiResponseHelper.badRequest("Travel not found");
 
             Travel travel = optionalTravel.get();
 
@@ -78,7 +80,7 @@ public class TravelService {
     public ApiResponse<?> createTravel(RegisterTravelDTO travelDTO) {
         try {
             Travel travel = new Travel();
-            travel.setName(travelDTO.name()); // Corrigido
+            travel.setName(travelDTO.name());
             travel.setStartDate(travelDTO.startDate());
             travel.setEndDate(travelDTO.endDate());
 
@@ -269,7 +271,7 @@ public class TravelService {
 
             user = optionalUser.get();
 
-            Optional<Travel> optionalTravel = travelRepository.findById(id);
+            Optional<Travel> optionalTravel = travelRepository.findByIdAndUser(id, user);
 
             if(optionalTravel.isEmpty())
                 return ApiResponseHelper.notFound("Travel not found");
@@ -321,30 +323,64 @@ public class TravelService {
         }
     }
 
-//    public ApiResponse<List<TravelBasicDTO>> allTravels(User user) {
-//
-//        try {
-//
-//            Optional<User> optionalUser = userRepository.findById(user.getId());
-//
-//            if(optionalUser.isEmpty())
-//                return ApiResponseHelper.notFound("User not found");
-//
-//            user = optionalUser.get();
-//            List<TravelBasicDTO> travels = new ArrayList<>();
-//
-//            for(Travel travel : user.getTravels()) {
-//                travels.add(new TravelBasicDTO(
-//                        travel.getId(),
-//                        travel.getName(),
-//                        travel.getCollections().size(),
-//                        travel.getMovies().size(),
-//                        List
-//                        ))
-//            }
-//        }
-//
-//        } catch (Exception exception) {
-//            return ApiResponseHelper.internalError(exception);
-//        }
+    public ApiResponse<List<SimpleCollectionDTO>> getCollections(String id, User user) {
+
+        try {
+
+            Optional<User> optionalUser = userRepository.findById(user.getId());
+
+            if (optionalUser.isEmpty())
+                return ApiResponseHelper.notFound("User not found");
+
+            user = optionalUser.get();
+
+            Optional<Travel> optionalTravel = travelRepository.findByIdAndUser(id, user);
+
+            if (optionalTravel.isEmpty())
+                return ApiResponseHelper.notFound("Travel not found");
+
+            Travel travel = optionalTravel.get();
+
+            List<SimpleCollectionDTO> collections = travel.getCollections().stream()
+                    .map(collection -> new SimpleCollectionDTO(
+                            collection.getId(),
+                            collection.getName()))
+                    .toList();
+
+            return ApiResponseHelper.ok("Total collections: " + collections.size(), collections);
+        } catch (Exception exception) {
+            return ApiResponseHelper.internalError(exception);
+        }
+    }
+
+    public ApiResponse<List<SimpleCollectionDTO>> searchCollections(String id, SearchCollectionDTO search, User user) {
+
+        try {
+            Optional<User> optionalUser = userRepository.findById(user.getId());
+
+            if (optionalUser.isEmpty())
+                return ApiResponseHelper.notFound("User not found");
+
+            user = optionalUser.get();
+
+            Optional<Travel> optionalTravel = travelRepository.findByIdAndUser(id, user);
+
+            if (optionalTravel.isEmpty())
+                return ApiResponseHelper.notFound("Travel not found");
+
+            Travel travel = optionalTravel.get();
+
+            List<SimpleCollectionDTO> collections = travel.getCollections().stream()
+                    .filter(collection -> collection.getName().toLowerCase().contains(search.collectionName().toLowerCase()))
+                    .map(collection -> new SimpleCollectionDTO(
+                            collection.getId(),
+                            collection.getName()))
+                    .toList();
+
+            return ApiResponseHelper.ok("Total collections: " + collections.size(), collections);
+        } catch (Exception exception) {
+            return ApiResponseHelper.internalError(exception);
+        }
+    }
+
 }
