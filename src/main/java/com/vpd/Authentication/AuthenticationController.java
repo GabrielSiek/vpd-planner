@@ -59,6 +59,8 @@ public class AuthenticationController {
 
     @GetMapping("/test")
     public String test() {
-        return "API no ar, capitão!";
+        return "A kaka é linda!";
     }
 }
+
+//ip da maquina: pota (8080) /auth/test
